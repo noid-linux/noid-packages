@@ -8,6 +8,7 @@
 !/.editorconfig
 !/.gitattributes
 !/.github
+!/.forgejo
 !/.gitignore
 !/.mailmap
 !/CONTRIBUTING.md
