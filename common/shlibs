@@ -3,3 +3,4 @@ append libglib-testing-0.so.0 libglib-testing-0.2.0_1
 append libnss_malcontent.so.2 malcontent-0.14.0_2
 append libmalcontent-ui-1.so.1 malcontent-0.14.0_2
 append libmalcontent-0.so.0 malcontent-0.14.0_2
+append libbge.so.0 bazaar-0.10.0_1
