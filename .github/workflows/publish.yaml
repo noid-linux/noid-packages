@@ -39,7 +39,7 @@ jobs:
           sed -i 's|repo-default|repo-ci|g' /etc/xbps.d/*-repository-*.conf
           # install dependencies
           xbps-install -Syu xbps && xbps-install -yu &&
-          xbps-install -y sudo bash curl git ripgrep github-cli
+          xbps-install -y sudo bash curl git ripgrep github-cli fd
           # ensure bash is available
           if ! bash -c true; then
             echo "::error title=Failed to set up build environment::Bash was not found. Re-run this job."

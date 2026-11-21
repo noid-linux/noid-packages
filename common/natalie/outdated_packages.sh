@@ -3,7 +3,7 @@
 # outdated_packages.sh
 
 remote_index() {
-	for subrepo in $(ls -1 common/repos); do
+	for subrepo in $(rg -P "repository=" srcpkgs/*/template | sed 's/.*repository=\"\?noid-\([^"]*\)\"\?/\1/' | sort -u); do
 		if curl -LfIs "$BASEURL/$subrepo/x86_64-repodata" >/dev/null; then
 			xbps-query --repository="$BASEURL/$subrepo" -RsiM "*" | awk '{ print $2 }'
 		fi

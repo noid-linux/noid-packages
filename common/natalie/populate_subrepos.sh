@@ -2,10 +2,11 @@
 #
 # populate_subrepos.sh
 
-for subrepo in $(ls -1 common/repos); do
-	mkdir -p "xbps-repo/$subrepo"
+for subrepo in $(basename -a $(fd -t d '' ../void-packages/hostdir/binpkgs/)); do
+	subrepo_dir="xbps-repo/$(sed 's/noid-//' <<< $subrepo)"
+	mkdir -p "$subrepo_dir"
 
-	for pkg in $(< common/repos/$subrepo); do
+	for pkg in $(rg -P "repository=\"?$subrepo\"?" srcpkgs/*/template | sed 's|srcpkgs/\([^/]*\)/.*|\1|'); do
 		if ! rg ^"$pkg"$ /tmp/templates; then
 		   continue
 		fi
@@ -20,17 +21,17 @@ for subrepo in $(ls -1 common/repos); do
 		subpkgs=$(rg "subpackages\:" <<< "$info" | awk '{ print $2 }')
 
 		package=$pkgname-${version}_$revision.x86_64.xbps
-		mv hostdir/binpkgs/$package ../noid-packages/xbps-repo/$subrepo
+		mv hostdir/binpkgs/$subrepo/$package ../noid-packages/$subrepo_dir
 
 		for spkg in $subpkgs; do
 			subpackage=$spkg-${version}_$revision.x86_64.xbps
-			mv hostdir/binpkgs/$subpackage ../noid-packages/xbps-repo/$subrepo
+			mv hostdir/binpkgs/$subrepo/$subpackage ../noid-packages/$subrepo_dir
 		done
 
 		cd -
 	done
 
-	if [ -z "$(ls xbps-repo/$subrepo)" ]; then
-		rm -rf xbps-repo/$subrepo
+	if [ -z "$(ls $subrepo_dir)" ]; then
+		rm -rf $subrepo_dir
 	fi
 done
