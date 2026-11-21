@@ -4,3 +4,5 @@ append libnss_malcontent.so.2 malcontent-0.14.0_2
 append libmalcontent-ui-1.so.1 malcontent-0.14.0_2
 append libmalcontent-0.so.0 malcontent-0.14.0_2
 append libbge.so.0 bazaar-0.10.0_1
+append libcalamares.so.3.4 calamares-3.4.3_2
+append libcalamaresui.so.3.4 calamares-3.4.3_2
