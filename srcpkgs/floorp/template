@@ -1,0 +1,31 @@
+# Template file for 'floorp'
+pkgname=floorp
+version=12.21.2
+revision=1
+archs="x86_64"
+short_desc="Firefox fork seeking balance between versatility, privacy and openness"
+maintainer="Naz <ndpm13@ch-naseem.com>"
+license="MPL-2.0"
+homepage="https://floorp.app/"
+changelog="https://blog.floorp.app/en/categories/release/"
+distfiles="https://github.com/Floorp-Projects/Floorp/releases/download/v${version}/floorp-linux-x86_64.tar.xz"
+checksum=3fb99f48c385bdaafd2ac919a81482373f818b8d2d4e6eff14266c41a921b65f
+nostrip=yes
+repository=noid-main
+
+do_install() {
+	vmkdir usr/lib/${pkgname}
+	vcopy * usr/lib/${pkgname}/
+
+	vbin ${FILESDIR}/${pkgname}.sh floorp
+
+	vinstall ${FILESDIR}/${pkgname}.desktop 644 usr/share/applications/
+
+	for i in 16 32 48 64 128; do
+		vmkdir usr/share/icons/hicolor/${i}x${i}/apps
+		ln -sf /usr/lib/${pkgname}/browser/chrome/icons/default/default${i}.png \
+			${DESTDIR}/usr/share/icons/hicolor/${i}x${i}/apps/${pkgname}.png
+	done
+
+	vinstall ${FILESDIR}/policies.json 644 usr/lib/${pkgname}/distribution/
+}
