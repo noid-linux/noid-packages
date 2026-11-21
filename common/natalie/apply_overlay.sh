@@ -7,8 +7,10 @@ echo "https://github.com/noid-linux/xbps-repo/releases/download/main" |
 cp common/repo-keys/* /var/db/xbps/keys/
 
 cp -r etc/* ../void-packages/etc/
+cp -r common/natalie ../void-packages/common/
 cp -r --remove-destination srcpkgs/* ../void-packages/srcpkgs/
 cp common/repo-keys/* ../void-packages/common/repo-keys/
 common/scripts/overlay_shlibs.sh
-sed -i "1i repository=https://github.com/noid-linux/xbps-repo/releases/download/main" \
+sed -i \
+	"1i repository=https://github.com/noid-linux/xbps-repo/releases/download/main\nrepository=https://github.com/noid-linux/xbps-repo/releases/download/dinit\nrepository=https://github.com/noid-linux/xbps-repo/releases/download/nonfree" \
 	../void-packages/etc/xbps.d/repos-remote.conf

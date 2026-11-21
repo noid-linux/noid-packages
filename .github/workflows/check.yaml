@@ -161,7 +161,7 @@ jobs:
       - name: Show files
         run: |
           cd void-packages
-          sudo -Eu builder common/travis/show_files.sh "$BOOTSTRAP" "$ARCH"
+          sudo -Eu builder common/natalie/show_files.sh "$BOOTSTRAP" "$ARCH"
 
       - name: Compare to previous
         run: |
@@ -174,7 +174,7 @@ jobs:
               cd void-packages
               export XDG_CACHE_HOME="$PWD/.cache"
               sudo -Eu builder xlocate -S &&
-              sudo -Eu builder common/scripts/lint-conflicts
+              sudo -Eu builder common/natalie/lint-conflicts
           fi
 
       - name: Verify repository state
@@ -182,4 +182,4 @@ jobs:
           cd void-packages
           mkdir -p /check-install &&
           chown builder:builder /check-install &&
-          sudo -Eu builder common/travis/check-install.sh "$BOOTSTRAP" "$ARCH"
+          sudo -Eu builder common/natalie/check-install.sh "$BOOTSTRAP" "$ARCH"
