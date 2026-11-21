@@ -1,0 +1,40 @@
+diff --git a/src/modules/keyboard/keyboard.schema.yaml b/src/modules/keyboard/keyboard.schema.yaml
+index 0fb1fdcf3..1cc4122f5 100644
+--- a/src/modules/keyboard/keyboard.schema.yaml
++++ b/src/modules/keyboard/keyboard.schema.yaml
+@@ -16,4 +16,5 @@ properties:
+         type: object
+         properties:
+             kwin: { type: boolean, default: false }
++            gnome: {  type: boolean, default: false }
+ required: [ xOrgConfFileName, convertedKeymapPath ]
+diff --git a/src/modules/unpackfsc/unpackfsc.schema.yaml b/src/modules/unpackfsc/unpackfsc.schema.yaml
+index 14493b687..de0cd1460 100644
+--- a/src/modules/unpackfsc/unpackfsc.schema.yaml
++++ b/src/modules/unpackfsc/unpackfsc.schema.yaml
+@@ -6,17 +6,11 @@ $id: https://calamares.io/schemas/unpackfsc
+ additionalProperties: false
+ type: object
+ properties:
+-    unpack:
+-        type: array
+-        items:
+-            type: object
+-            additionalProperties: false
+-            properties:
+-                source: { type: string }
+-                sourcefs: { type: string }
+-                destination: { type: string }
+-                condition:
+-                    anyOf:
+-                      - type: boolean
+-                      - type: string
+-            required: [ source , sourcefs, destination ]
++    source: { type: string }
++    sourcefs: { type: string }
++    destination: { type: string }
++    condition:
++        anyOf:
++          - type: boolean
++          - type: string
++required: [ source , sourcefs, destination ]
