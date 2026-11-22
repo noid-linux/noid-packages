@@ -1,0 +1,12 @@
+# Template file for 'lutgen-rs'
+pkgname=lutgen-rs
+version=20261122
+revision=1
+metapackage=yes
+depends="lutgen-cli lutgen-studio"
+short_desc="Interpolated LUT utility for color palettes (metapackage)"
+maintainer="Naz <ndpm13@ch-naseem.com>"
+license="Public Domain"
+homepage="https://github.com/ozwaldorf/lutgen-rs"
+changelog="https://github.com/ozwaldorf/lutgen-rs/raw/refs/heads/main/CHANGELOG.md"
+repository=noid-main
