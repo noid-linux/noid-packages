@@ -1,0 +1,25 @@
+# Template file for 'nerd-fonts-cascadiacode'
+pkgname=nerd-fonts-cascadiacode
+version=3.5.1
+revision=1
+depends="font-util"
+short_desc="Iconic font aggregator collection - CascadiaCode"
+maintainer="Naz <ndpm13@ch-naeseem.com>"
+license="MIT"
+homepage="https://nerdfonts.com"
+changelog="https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/changelog.md"
+distfiles="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/CascadiaCode.tar.xz"
+checksum=ae598e9401e2846aa3ee364513715de0490b844a4b54f0768991f45f23aa8369
+font_dirs="/usr/share/fonts/NerdFonts/ttf"
+conflicts="nerd-fonts-ttf>=0"
+repository=noid-main
+
+do_install() {
+	vmkdir usr/share/fonts/NerdFonts/ttf
+
+	for f in *.ttf; do
+		[ -f "$f" ] && vinstall "$f" 644 usr/share/fonts/NerdFonts/ttf
+	done
+
+	vlicense LICENSE
+}
