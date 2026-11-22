@@ -1,0 +1,31 @@
+# Template file for 'ly'
+pkgname=ly
+version=1.5.0
+revision=2
+archs="x86_64"
+hostmakedepends="zig-0.17 pkg-config"
+makedepends="pam-devel libxcb-devel"
+depends="xorg-server xauth brightnessctl"
+short_desc="Lightweight TUI (ncurses-like) display manager for Linux and BSD"
+maintainer="Naz <ndpm13@ch-naseem.com>"
+license="WTFPL"
+homepage="https://codeberg.org/fairyglade/ly"
+distfiles="https://codeberg.org/fairyglade/ly/archive/v${version}.tar.gz"
+checksum=115a7f7fb281803ca7f9e0ddbdf76834a53f7fa6bc702d766d03772ce1976dc3
+conf_files="
+ /etc/ly/config.ini
+ /etc/pam.d/ly
+ /etc/pam.d/ly-autologin"
+nopie=yes
+repository=noid-main
+
+do_build() {
+	zig build -Dinit_system=runit
+}
+
+do_install() {
+	zig build -Dinit_system=runit -Ddest_directory="${DESTDIR}" \
+		installexe
+
+	vlicense license.md
+}
