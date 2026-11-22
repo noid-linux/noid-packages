@@ -1,0 +1,20 @@
+# Template file for 'lutgen-studio'
+pkgname=lutgen-studio
+version=0.4.0
+revision=1
+archs="x86_64"
+build_style=cargo
+make_build_args="-p lutgen-studio"
+make_install_args="--path crates/studio --bin lutgen-studio"
+short_desc="Offical GUI for Lutgen, a way to apply popular colorschemes to images"
+maintainer="Naz <ndpm13@ch-naseem.com>"
+license="MIT"
+homepage="https://github.com/ozwaldorf/lutgen-rs"
+changelog="https://github.com/ozwaldorf/lutgen-rs/raw/refs/heads/main/CHANGELOG.md"
+distfiles="https://github.com/ozwaldorf/lutgen-rs/archive/refs/tags/lutgen-studio-v${version}.tar.gz"
+checksum=0e0959a92feedb99883eed599aa0869af86d4bc2153b490182537f65e1bbac16
+repository=noid-main
+
+post_install() {
+	vlicense LICENSE
+}
