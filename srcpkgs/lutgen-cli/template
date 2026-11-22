@@ -1,0 +1,20 @@
+# Template file for 'lutgen-cli'
+pkgname=lutgen-cli
+version=1.1.1
+revision=1
+archs="x86_64"
+build_style=cargo
+make_build_args="-p lutgen-cli"
+make_install_args="--path crates/cli"
+short_desc="Fast interpolated LUT utility for arbitrary and popular color palettes"
+maintainer="Naz <ndpm13@ch-naseem.com>"
+license="MIT"
+homepage="https://github.com/ozwaldorf/lutgen-rs"
+changelog="https://github.com/ozwaldorf/lutgen-rs/raw/refs/heads/main/CHANGELOG.md"
+distfiles="https://github.com/ozwaldorf/lutgen-rs/archive/refs/tags/lutgen-v${version}.tar.gz"
+checksum=86f65213c8ada58eee5b2e4113db5c6eeebf537356c2c62cd2bf5c3f1c8c7255
+repository=noid-main
+
+post_install() {
+	vlicense LICENSE
+}
