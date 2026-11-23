@@ -1,0 +1,12 @@
+# Template file for 'noid-artwork'
+pkgname=noid-artwork
+version=20261124+77a268f79a
+revision=1
+build_style=gnu-makefile
+short_desc="Noid Linux artwork"
+maintainer="Naz <ndpm13@ch-naseem.com>"
+license="CC-BY-4.0"
+homepage="https://noid-linux.github.io/"
+distfiles="https://github.com/noid-linux/noid-artwork/archive/${version#*+}.tar.gz"
+checksum=81f9228868c06170195d6d6f405d289e5330ac474ed3c2dc1b8598581eb8020b
+repository=noid-main
