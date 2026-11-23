@@ -1,0 +1,22 @@
+# Template file for 'noid-welcome'
+pkgname=noid-welcome
+version=0.3.4
+revision=1
+archs="x86_64"
+build_style=configure
+build_helper=rust
+configure_args="--prefix=/usr"
+hostmakedepends="blueprint-compiler pkg-config cargo cargo-auditable"
+makedepends="gtk4-devel"
+depends="bash polkit curl"
+short_desc="Noid Linux Welcome Screen"
+maintainer="Naz <ndpm13@ch-naseem.com>"
+license="GPL-3.0-or-later"
+homepage="https://forge.ch-naseem.com/noid-linux/noid-welcome"
+distfiles="https://github.com/noid-linux/noid-welcome/archive/refs/tags/v${version}.tar.gz"
+checksum=306cece0635ec48e502aa2d802c07f5991579c0962d28552bc2ace72537e11c7
+repository=noid-main
+
+export BIN="target/release/noid-welcome"
+export CARGO="cargo auditable"
+export CARGO_OPTS="--release"
