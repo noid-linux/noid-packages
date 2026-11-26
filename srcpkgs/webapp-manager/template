@@ -1,0 +1,25 @@
+# Template file for 'webapp-manager'
+pkgname=webapp-manager
+version=1.4.9
+revision=1
+archs="x86_64"
+hostmakedepends="tar xz"
+depends="python3-tldextract python3-xapp python3-Pillow
+ python3-BeautifulSoup4 python3-configobj python3-gobject
+ python3-setproctitle python3-tldextract xapp-symbolic-icons"
+short_desc="Run websites as if they were apps"
+maintainer="Naz <ndpm13@ch-naseem.com>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/linuxmint/webapp-manager"
+distfiles="https://github.com/linuxmint/webapp-manager/releases/download/master.mint27/packages.tar.gz"
+checksum=c28bf5646a91a37ccbb01d2a77aa66004d5633dd5a35cb7f289f4fa57afdc223
+nostrip=yes
+repository=noid-main
+
+post_extract() {
+	ar x ${pkgname}_${version}_all.deb
+}
+
+do_install() {
+	tar xf data.tar.xz -C ${DESTDIR}
+}
