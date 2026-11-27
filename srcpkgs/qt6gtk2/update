@@ -1,0 +1,2 @@
+site="https://www.opencode.net/trialuser/qt6gtk2/-/raw/master/ChangeLog"
+pattern="Version \K[0-9].*"

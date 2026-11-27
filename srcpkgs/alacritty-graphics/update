@@ -1,0 +1,2 @@
+version="${version}-graphics"
+pattern="refs/tags/v\K.*"

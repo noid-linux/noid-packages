@@ -1,0 +1,3 @@
+version="${version}"
+site="https://www.beeper.com/changelog/desktop"
+pattern="v\K.*(?= - )"
