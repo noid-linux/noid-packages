@@ -1,0 +1,67 @@
+name: Check for updates
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  check-for-updates:
+    name: Check for updates
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.pull_request.title, '[ci skip]') && !contains(github.event.pull_request.body, '[ci skip]')"
+
+    container:
+      image: ghcr.io/void-linux/void-musl-full
+
+    steps:
+      - name: Prepare container
+        run: |
+          # switch to repo-ci mirror
+          mkdir -p /etc/xbps.d && cp /usr/share/xbps.d/*-repository-*.conf /etc/xbps.d/
+          sed -i 's|repo-default|repo-ci|g' /etc/xbps.d/*-repository-*.conf
+          # install dependencies
+          xbps-install -Syu xbps && xbps-install -yu &&
+          xbps-install -y sudo bash grep curl git fd ripgrep
+          # ensure bash is available
+          if ! bash -c true; then
+            echo "::error title=Failed to set up build environment::Bash was not found. Re-run this job."
+            exit 1
+          fi
+          # create non-root user
+          useradd -G xbuilder -M builder
+
+      - name: Clone and checkout
+        uses: ndpm13/treeless-checkout-action@v1
+        with:
+          ref: "refs/heads/master"
+          repository: "void-linux/void-packages"
+          directory: "void-packages"
+
+      - name: Clone and checkout
+        uses: ndpm13/treeless-checkout-action@v1
+        with:
+          directory: "noid-packages"
+
+      - name: Apply Noid overlay
+        run: |
+          cd noid-packages
+          common/natalie/apply_overlay.sh
+
+      - name: Prepare Void masterdir
+        run: |
+          cd void-packages
+          chown -R builder:builder . &&
+          sudo -Eu builder common/travis/set_mirror.sh &&
+          common/travis/fetch-xtools.sh
+
+      - name: Prepare Noid masterdir
+        run: |
+          cd noid-packages
+          chown -R builder:builder .
+
+      - name: Check for updates
+        run: |
+          cd void-packages
+          sudo -Eu builder common/natalie/check_updates.sh
+
+      # TODO: upload the updates file somewhere useful
