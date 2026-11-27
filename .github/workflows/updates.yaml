@@ -1,0 +1,109 @@
+name: Check for updates
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  check-for-updates:
+    name: Check for updates
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.pull_request.title, '[ci skip]') && !contains(github.event.pull_request.body, '[ci skip]')"
+    outputs:
+      updates: ${{ steps.set-updates.outputs.updates }}
+
+    container:
+      image: ghcr.io/void-linux/void-musl-full
+
+    steps:
+      - name: Prepare container
+        run: |
+          # switch to repo-ci mirror
+          mkdir -p /etc/xbps.d && cp /usr/share/xbps.d/*-repository-*.conf /etc/xbps.d/
+          sed -i 's|repo-default|repo-ci|g' /etc/xbps.d/*-repository-*.conf
+          # install dependencies
+          xbps-install -Syu xbps && xbps-install -yu &&
+          xbps-install -y sudo bash grep curl git fd ripgrep
+          # ensure bash is available
+          if ! bash -c true; then
+            echo "::error title=Failed to set up build environment::Bash was not found. Re-run this job."
+            exit 1
+          fi
+          # create non-root user
+          useradd -G xbuilder -M builder
+
+      - name: Clone and checkout (void-linux/void-packages)
+        uses: ndpm13/treeless-checkout-action@v1
+        with:
+          ref: "refs/heads/master"
+          repository: "void-linux/void-packages"
+          directory: "void-packages"
+
+      - name: Clone and checkout  (noid-linux/noid-packages
+        uses: ndpm13/treeless-checkout-action@v1
+        with:
+          directory: "noid-packages"
+
+      - name: Apply Noid overlay
+        run: |
+          cd noid-packages
+          common/natalie/apply_overlay.sh
+
+      - name: Prepare Void masterdir
+        run: |
+          cd void-packages
+          chown -R builder:builder . &&
+          sudo -Eu builder common/travis/set_mirror.sh &&
+          common/travis/fetch-xtools.sh
+
+      - name: Prepare Noid masterdir
+        run: |
+          cd noid-packages
+          chown -R builder:builder .
+
+      - name: Check for updates
+        run: |
+          cd void-packages
+          sudo -Eu builder common/natalie/check_updates.sh
+
+      - name: RENAMEME
+        id: set-updates
+        run: |
+          {
+            echo 'updates<<EOF_7f3a91'
+            cat void-packages/noid-updates.txt
+            echo 'EOF_7f3a91'
+          } >> "$GITHUB_OUTPUT"
+
+  upload-noid-updates:
+    needs: check-for-updates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: noid-builds-token
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: noid-linux
+          repositories: xbps-repo
+
+      - name: Clone and checkout (noid-linux/xbps-repo)
+        uses: actions/checkout@v7
+        with:
+          repository: "noid-linux/xbps-repo"
+          token: ${{ steps.noid-builds-token.outputs.token }}
+
+      - name: RENAMEME
+        run: |
+          tee noid-updates.txt <<< "$NOID_UPDATES"
+        env:
+          NOID_UPDATES: ${{ needs.check-for-updates.outputs.updates }}
+
+      - name: RENAMEME
+        run: |
+          git config --global user.name 'noid-builds[bot]'
+          git config --global user.email '358297620+noid-builds[bot]@users.noreply.github.com'
+          git add noid-updates.txt
+          git commit -m "chore: daily check for updates"
+          git push
