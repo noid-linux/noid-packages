@@ -1,13 +1,13 @@
 # Template file for 'noid-dinit'
 pkgname=noid-dinit
 version=0.1.2
-revision=1
+revision=2
 archs="x86_64"
 build_style=gnu-makefile
 make_dirs="/var/log/dinit 0755 root root"
 hostmakedepends="pkg-config scdoc"
 makedepends="dbus-devel"
-depends="dinit eudev bash"
+depends="dinit eudev bash noid-dinit-repo"
 short_desc="RC scripts and boot services for dinit"
 maintainer="Naz <ndpm13@ch-naseem.com>"
 license="BSD-2-Clause"
@@ -23,5 +23,15 @@ repository=noid-dinit
 
 post_install() {
 	ln -sf dinit ${DESTDIR}/usr/bin/init
+
+	vinstall ${FILESDIR}/0-repository-noid-dinit.conf 644 etc/xbps.d
+
 	vlicense COPYING
+}
+
+noid-dinit-repo_package() {
+	short_desc+=" - XBPS repository"
+	pkg_install() {
+		vmove etc/xbps.d/0-repository-noid-dinit.conf
+	}
 }
