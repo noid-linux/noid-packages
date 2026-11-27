@@ -25,10 +25,6 @@
 	</p>
 </div>
 
-> [!CAUTION]
-> This repository is still under active construction, use
-> [noid-linux/xbps-repo][xbps-repo] for now instead.
-
 ## Repository public key
 
 <details>
