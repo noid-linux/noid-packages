@@ -9,7 +9,7 @@ makedepends="freetype-devel fontconfig-devel libxcb-devel libxkbcommon-devel"
 depends="libXcursor libXrandr libXi libXxf86vm ncurses
  alacritty-graphics-terminfo-${version}_${revision} libxkbcommon-x11"
 short_desc="Cross-platform, GPU-accelerated terminal emulator"
-maintainer="Naz <ndpm13@ch-naeseem.com>"
+maintainer="Naz <ndpm13@ch-naseem.com>"
 license="Apache-2.0"
 homepage="https://github.com/ayosec/alacritty"
 changelog="https://github.com/ayosec/alacritty/raw/refs/heads/graphics/CHANGELOG.md"
