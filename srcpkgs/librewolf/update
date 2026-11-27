@@ -1,0 +1,3 @@
+version="${version//+/-}"
+site="https://codeberg.org/librewolf/-/packages/generic/librewolf/versions"
+pattern="librewolf/.*\">\K[^<a-z]*"
