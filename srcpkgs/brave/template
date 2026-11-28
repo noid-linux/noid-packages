@@ -9,34 +9,45 @@ maintainer="Naz <ndpm13@ch-naseem.com>"
 license="MPL-2.0"
 homepage="https://brave.com"
 changelog="https://raw.githubusercontent.com/brave/brave-browser/refs/heads/master/CHANGELOG_DESKTOP.md"
-distfiles="https://github.com/brave/brave-browser/releases/download/v${version}/brave-browser-${version}-linux-amd64.zip"
-checksum=734bd9e1d24bc0a94c03b0a43845107dd8a29f572c652023cf7177f5fc3a5f38
-nostrip=yes
-skiprdeps="/opt/brave/libqt5_shim.so /opt/brave/libqt6_shim.so"
+distfiles="https://github.com/brave/brave-browser/releases/download/v${version}/brave-browser_${version}_amd64.deb
+ https://github.com/brave/brave-browser/releases/download/v${version}/brave-origin_${version}_amd64.deb"
+checksum="8cd14c57f7fd6d79dfd9a25450175b5438a1b11b565ff5d08ad991b702de9fd5
+ 4cb1ad4ea0e5fa52b4fddd59362e7a9d94276657fe16a6203d0c1d25bd8f730e"
 replaces="brave-browser>=0"
+nostrip=yes
+skiprdeps="
+ /opt/brave.com/brave/libqt5_shim.so
+ /opt/brave.com/brave/libqt6_shim.so"
 repository=noid-main
 
 do_install() {
-	vmkdir opt/brave
-	vcopy "*" opt/brave
+	rm -r etc opt/brave.com/brave{,-origin}/cron
+	rm opt/brave.com/brave{,-origin}/libvulkan.so.1
 
-	rm ${DESTDIR}/opt/${pkgname}/libvulkan.so.1
-	rm ${DESTDIR}/opt/${pkgname}/default-app-block
+	for df in usr/share/applications/*.desktop; do
+		vinstall "${df}" 644 usr/share/applications
+	done
 
-	rm -rf ${DESTDIR}/opt/${pkgname}/cron
-	rm -rf ${DESTDIR}/opt/${pkgname}/MEIPreload
-	rm -rf ${DESTDIR}/opt/${pkgname}/PrivacySandboxAttestationsPreloaded
+	vmkdir opt
+	vcopy opt/brave.com opt
 
-	chmod 4755 ${DESTDIR}/opt/brave/chrome-sandbox
+	ln -s /usr/lib/libvulkan.so.1 ${DESTDIR}/opt/brave.com/brave/libvulkan.so.1
+	ln -s /usr/lib/libvulkan.so.1 ${DESTDIR}/opt/brave.com/brave-origin/libvulkan.so.1
 
-	vbin ${FILESDIR}/brave-browser.sh brave
+	# suid sandbox
+	chmod 4755 ${DESTDIR}/opt/brave.com/brave/chrome-sandbox
+	chmod 4755 ${DESTDIR}/opt/brave.com/brave-origin/chrome-sandbox
 
-	vinstall ${FILESDIR}/brave-browser.desktop 644 usr/share/applications
-	vlicense LICENSE
+	vmkdir usr/bin
+	ln -s /opt/brave.com/brave/brave-browser ${DESTDIR}/usr/bin/brave-browser-stable
+	ln -s /opt/brave.com/brave-origin/brave-origin ${DESTDIR}/usr/bin/brave-origin-stable
 
-	for size in 16 24 32 48 64 128 256; do
-		vinstall product_logo_${size}.png 644 \
-			usr/share/icons/hicolor/${size}x${size}/apps brave-desktop.png
+	for res in 16 24 32 48 64 128 256; do
+		vinstall opt/brave.com/brave/product_logo_${res}.png 644 \
+			usr/share/icons/hicolor/${res}x${res}/apps brave-browser.png
+
+		vinstall opt/brave.com/brave-origin/product_logo_${res}.png 644 \
+			usr/share/icons/hicolor/${res}x${res}/apps brave-origin.png
 	done
 }
 
@@ -44,4 +55,25 @@ brave-browser_package() {
 	short_desc+=" - (Dummy transitional package)"
 	metapackage=yes
 	depends="brave-${version}_${revision}"
+}
+
+brave-origin_package() {
+	depends="vulkan-loader"
+	short_desc="Minimalist browser from the makers of Brave"
+	changelog="https://raw.githubusercontent.com/brave/brave-browser/refs/heads/master/CHANGELOG_DESKTOP_ORIGIN.md"
+	nostrip=yes
+	skiprdeps="
+	 /opt/brave.com/brave/libqt5_shim.so
+	 /opt/brave.com/brave/libqt6_shim.so"
+
+	pkg_install() {
+		vmove usr/share/applications/brave-origin.desktop
+		vmove usr/share/applications/com.brave.Origin.desktop
+		vmove opt/brave.com/brave-origin
+		vmove usr/bin/brave-origin-stable
+
+		for res in 16 24 32 48 64 128 256; do
+			vmove usr/share/icons/hicolor/${res}x${res}/apps/brave-origin.png
+		done
+	}
 }
