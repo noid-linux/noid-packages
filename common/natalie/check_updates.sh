@@ -9,7 +9,11 @@ while IFS= read -r m; do
 
 	updates=""
 	for pkg in $(rg -l "$m" ../noid-packages/srcpkgs/*/template | sed 's|.*srcpkgs/\(.*\)/template|\1|'); do
-		updates+=$(./xbps-src update-check $pkg | xargs -I {} echo -e "\n{}")
+		update=$(./xbps-src update-check $pkg)
+
+		if [ -n "$update" ]; then
+			updates+="\n$update"
+		fi
 	done
 
 	if [ -n "$updates" ]; then

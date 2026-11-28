@@ -1,14 +1,19 @@
 name: Check for updates
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
+  push:
+    branches:
+      - "ci/updates"
+  # schedule:
+  #   - cron: "0 0 * * *"
 
 jobs:
   check-for-updates:
     name: Check for updates
     runs-on: ubuntu-latest
     if: "!contains(github.event.pull_request.title, '[ci skip]') && !contains(github.event.pull_request.body, '[ci skip]')"
+    outputs:
+      updates: ${{ steps.set-updates.outputs.updates }}
 
     container:
       image: ghcr.io/void-linux/void-musl-full
@@ -30,14 +35,14 @@ jobs:
           # create non-root user
           useradd -G xbuilder -M builder
 
-      - name: Clone and checkout
+      - name: Clone and checkout (void-linux/void-packages)
         uses: ndpm13/treeless-checkout-action@v1
         with:
           ref: "refs/heads/master"
           repository: "void-linux/void-packages"
           directory: "void-packages"
 
-      - name: Clone and checkout
+      - name: Clone and checkout  (noid-linux/noid-packages
         uses: ndpm13/treeless-checkout-action@v1
         with:
           directory: "noid-packages"
@@ -64,4 +69,44 @@ jobs:
           cd void-packages
           sudo -Eu builder common/natalie/check_updates.sh
 
-      # TODO: upload the updates file somewhere useful
+      - name: RENAMEME
+        id: set-updates
+        run: |
+          {
+            echo 'updates<<EOF_7f3a91'
+            cat void-packages/noid-updates.txt
+            echo 'EOF_7f3a91'
+          } >> "$GITHUB_OUTPUT"
+
+  upload-noid-updates:
+    needs: check-for-updates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: noid-builds-token
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: noid-linux
+          repositories: xbps-repo
+
+      - name: Clone and checkout (noid-linux/xbps-repo)
+        uses: actions/checkout@v7
+        with:
+          repository: "noid-linux/xbps-repo"
+          token: ${{ steps.noid-builds-token.outputs.token }}
+
+      - name: RENAMEME
+        run: |
+          tee noid-updates.txt <<< "$NOID_UPDATES"
+        env:
+          NOID_UPDATES: ${{ needs.check-for-updates.outputs.updates }}
+
+      - name: RENAMEME
+        run: |
+          git config --global user.name 'noid-builds[bot]'
+          git config --global user.email '358297620+noid-builds[bot]@users.noreply.github.com'
+          git add noid-updates.txt
+          git commit -m "chore: daily check for updates"
+          git push
